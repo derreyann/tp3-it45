@@ -9,12 +9,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stdbool.h>
 
-#define NBR_TOWNS 6
+#define SOUSTOURS 1
+#define NBR_TOWNS 21
 
 /* Distance matrix */
 double dist[NBR_TOWNS][NBR_TOWNS];
-
 /* Each edge has a starting and ending node */
 int starting_town[NBR_TOWNS];
 int ending_town[NBR_TOWNS];
@@ -37,12 +38,56 @@ float coord[NBR_TOWNS][2] =
         {945.0, 685.0},
         {845.0, 655.0},
         {880.0, 660.0},
+        {25.0, 230.0},
+        {525.0, 1000.0},
+        {580.0, 1175.0},
+        {650.0, 1130.0},
+        {1605.0, 620.0},
+        {1220.0, 580.0},
+        {1465.0, 200.0},
+        {1530.0, 5.0},
+        {845.0, 680.0},
+        {725.0, 370.0},
+        {145.0, 665.0},
+        {415.0, 635.0},
+        {510.0, 875.0},
+        {560.0, 365.0},
+        {300.0, 465.0}
 };
 
-double distformula(float x1, float y1, float x2, float y2)
+#if SOUSTOURS
+void remove_loops(double d0[NBR_TOWNS][NBR_TOWNS], int iteration)
 {
-    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    int start_town;
+    int end_town;
+    int j, k;
+    bool breakout;
+    for (int i = 0; i <= iteration; i++)
+    {
+        j = 0;
+        start_town = starting_town[i];
+        end_town = starting_town[i];
+        breakout = true;
+        while (j <= iteration && breakout)
+        {
+            j++;
+            for (k = 0; k <= iteration; k++)
+            {
+                breakout = false;
+                if (end_town == starting_town[k])
+                {
+                    end_town = ending_town[k];
+                    breakout = true;
+                }
+            }
+            if (breakout)
+            {
+                d0[end_town][start_town] = -1;
+            }
+        }
+    }
 }
+#endif
 
 // compute the distance matrix from the coord array and returns a (n_coords, n_coords) matrix
 
@@ -50,10 +95,16 @@ void compute_dist_matrix()
 {
     for (int i = 0; i < NBR_TOWNS; i++)
     {
-        for (int j = 0; j < NBR_TOWNS; j++)
+        int j = 0;
+        while (j < i)
         {
-            dist[i][j] = distformula(coord[i][0], coord[i][1], coord[j][0], coord[j][1]);
+            // Compute the distance between two towns
+            dist[i][j] = sqrt(pow(coord[i][0] - coord[j][0], 2) + pow(coord[i][1] - coord[j][1], 2));
+            // Symmetric matrix
+            dist[j][i] = dist[i][j];
+            j++;
         }
+        dist[i][i] = -1;
     }
 }
 /*
@@ -341,7 +392,9 @@ void little_algorithm(double d0[NBR_TOWNS][NBR_TOWNS], int iteration, double eva
         d2[izero][i] = -1;
         d2[i][jzero] = -1;
     }
-
+#if SOUSTOURS
+    remove_loops(d2, iteration);
+#endif
     /* Explore left child node according to given choice */
     little_algorithm(d2, iteration + 1, eval_node_child);
 
@@ -354,9 +407,6 @@ void little_algorithm(double d0[NBR_TOWNS][NBR_TOWNS], int iteration, double eva
     little_algorithm(d2, iteration, eval_node_child);
 }
 
-/**
- *
- */
 int main(int argc, char *argv[])
 {
 
@@ -375,20 +425,7 @@ int main(int argc, char *argv[])
     printf("\n");
 
     /* Compute the distance matrix */
-    // use the compute_dist_matrix function, pass him the corrds and coord num
-    for (int i = 0; i < NBR_TOWNS; i++)
-    {
-        int j = 0;
-        while (j < i)
-        {
-            // Compute the distance between two towns
-            dist[i][j] = sqrt(pow(coord[i][0] - coord[j][0], 2) + pow(coord[i][1] - coord[j][1], 2));
-            // Symmetric matrix
-            dist[j][i] = dist[i][j];
-            j++;
-        }
-        dist[i][i] = -1;
-    }
+    compute_dist_matrix();
 
     // compute_dist_matrix(NBR_TOWNS, coord);
 
@@ -406,11 +443,12 @@ int main(int argc, char *argv[])
 
     t_end = clock();
     double time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
+    printf("\033[1;35m");
     printf("Time taken: %f\n", time);
     printf("Total number of nodes: %d\n", nb_nodes);
 
-    printf("Hit RETURN!\n");
-    getchar();
+    // printf("Hit RETURN!\n");
+    // getchar();
 
     return 0;
 }
