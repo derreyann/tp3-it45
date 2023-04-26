@@ -4,7 +4,7 @@
  * Date   : 07/04/2014
  * Author : Olivier Grunder
  */
-
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -330,25 +330,12 @@ void little_algorithm(double d0[NBR_TOWNS][NBR_TOWNS], int iteration, double eva
 
     starting_town[iteration] = izero;
     ending_town[iteration] = jzero;
-    /**
-     *  Store the row and column of the zero with max penalty in
-     *  starting_town and ending_town
-     *  TO COMPLETE
-     *  ...
-     *  ...
-     */
 
     /* Do the modification on a copy of the distance matrix */
     double d2[NBR_TOWNS][NBR_TOWNS];
     memcpy(d2, d, NBR_TOWNS * NBR_TOWNS * sizeof(double));
 
-    /**
-     *  Modify the matrix d2 according to the choice of the zero with the max penalty
-     *  TO COMPLETE
-     *  ...
-     *  ...
-     */
-
+    /* Modify the dist matrix to explore the choice of the zero with the max penalty */
     for (i = 0; i < NBR_TOWNS; i++)
     {
         d2[izero][i] = -1;
@@ -361,14 +348,6 @@ void little_algorithm(double d0[NBR_TOWNS][NBR_TOWNS], int iteration, double eva
     /* Do the modification on a copy of the distance matrix */
     memcpy(d2, d, NBR_TOWNS * NBR_TOWNS * sizeof(double));
 
-    /**
-     *  Modify the dist matrix to explore the other possibility : the non-choice
-     *  of the zero with the max penalty
-     *  TO COMPLETE
-     *  ...
-     *  ...
-     */
-
     d2[izero][jzero] = -1;
 
     /* Explore right child node according to non-choice */
@@ -380,6 +359,9 @@ void little_algorithm(double d0[NBR_TOWNS][NBR_TOWNS], int iteration, double eva
  */
 int main(int argc, char *argv[])
 {
+
+    clock_t t_start, t_end;
+    t_start = clock();
 
     best_eval = -1;
 
@@ -422,6 +404,9 @@ int main(int argc, char *argv[])
     printf("Best solution:");
     print_solution(best_solution, best_eval);
 
+    t_end = clock();
+    double time = (double)(t_end - t_start) / CLOCKS_PER_SEC;
+    printf("Time taken: %f\n", time);
     printf("Total number of nodes: %d\n", nb_nodes);
 
     printf("Hit RETURN!\n");
