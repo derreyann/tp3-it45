@@ -12,7 +12,7 @@
 #include <stdbool.h>
 
 #define SOUSTOURS 1
-#define NBR_TOWNS 21
+#define NBR_TOWNS 11
 
 /* Distance matrix */
 double dist[NBR_TOWNS][NBR_TOWNS];
@@ -98,9 +98,7 @@ void compute_dist_matrix()
         int j = 0;
         while (j < i)
         {
-            // Compute the distance between two towns
             dist[i][j] = sqrt(pow(coord[i][0] - coord[j][0], 2) + pow(coord[i][1] - coord[j][1], 2));
-            // Symmetric matrix
             dist[j][i] = dist[i][j];
             j++;
         }
@@ -229,7 +227,7 @@ void build_solution()
                 return;
             }
         }
-        // Recherche de la ville suivante
+        // Ville suivante
         int trouve = 0;
         int i = 0;
         while ((!trouve) && (i < NBR_TOWNS))

@@ -26,7 +26,7 @@ printf{i in 1..n, j in 1..n: x[i,j]=1} "%3d --> %3d  Dist: %8g\n", i-1, j-1, c[i
 
 data;
 
-param n := 21;
+param n := 6;
 
 param coords: 0 1 :=
     1 565.0 575.0
